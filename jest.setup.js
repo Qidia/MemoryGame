@@ -1,8 +1,8 @@
-const { TextEncoder, TextDecoder } = require('util')
+const { TextEncoder, TextDecoder } = require('util');
 
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
-const { JSDOM } = require('jsdom')
+const { JSDOM } = require('jsdom');
 
-global.JSDOM = JSDOM
+global.JSDOM = JSDOM;

@@ -1,5 +1,7 @@
 import { generateGame } from './game.js';
+import { handleClick } from './eventHandlers.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  generateGame();
-});
+  generateGame(); // Генерация поля игры
+  document.addEventListener('click', handleClick); // Прикрепление обработчиков событий
+})

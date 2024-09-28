@@ -4,4 +4,6 @@
  */
 export const SELECTORS = {
   board: document.querySelector('.board'),
+  boardContainer: document.querySelector('.board-container'),
+  win: document.querySelector('.win'),
 };
