@@ -7,17 +7,14 @@ import { SELECTORS } from './selectors.js';
  * @returns {strings[]} - Перемешанный массив с данными.
  */
 export const shuffleAndPickRandom = (items) => {
-  if (!items || !Array.isArray(items)) throw new Error('Передайте эмодзи в виде массива!');
+  if (!items || !Array.isArray(items)) throw new Error('Передайте значения в виде массива!');
 
   // сортировка исходного массива в случайном порядке
   const sortedArr = items.sort(() => Math.random(items) - 0.5);
-
   // достаем из 10 элементов первые 8
   const dublicateArr = [...sortedArr].slice(0, 8);
-
   // из массива в 8 элементов, делаем 16
   const doubleArr = [...dublicateArr, ...dublicateArr];
-
   // сортировка массива из 16 элементов в случайном порядке
   const sortedDoubleArr = doubleArr.sort(() => Math.random(doubleArr) - 0.5);
 
@@ -76,8 +73,8 @@ export const checkMatch = () => {
  */
 export const markMatched = (cards) => {
   cards.forEach((card) => card.classList.add('matched'));
-
   isSecondCardFlipped() && resetFlipCount(); // Если карточки совпали, обнуляем счетчик.
+  outputPartImage(cards);
 };
 
 /**
@@ -85,9 +82,7 @@ export const markMatched = (cards) => {
  */
 export const flipBack = () => {
   const unmatchedCards = document.querySelectorAll('.card:not(.matched)');
-
   unmatchedCards.forEach((card) => card.classList.remove('flipped'));
-
   resetFlipCount();
 };
 
@@ -103,15 +98,29 @@ export const isGameWon = () => !document.querySelectorAll('.card:not(.flipped)')
 export const displayWinMessage = () => {
   setTimeout(() => {
     SELECTORS.boardContainer.classList.add('flipped');
-
     SELECTORS.win.innerHTML = `
       <span class="win-text">
         Игра успешно пройдена!<br />
         количество шагов: <span class="highlight">${STATE.totalFlips}</span><br />
-        Время в игре: <span class="highlight">${STATE.totalTime}</span> секунд
       </span>
     `;
 
     clearInterval(STATE.loop);
-  }, 1000);
+  }, 4000);
 };
+
+/**
+ * Открываем часть картинки на совпавших картах
+ * @param {NodeList} cards - Перевернутые карты, которые совпали.
+ */
+function outputPartImage(cards) {
+  cards.forEach((card) => {
+    let id = card.getAttribute('id');
+    setTimeout(() => {
+      const imgHTML = `
+      <img src = ${STATE.imageParts[id]} class='partImage'></img>`;
+
+      card.insertAdjacentHTML('beforeend', imgHTML);
+    }, 2000);
+  });
+}

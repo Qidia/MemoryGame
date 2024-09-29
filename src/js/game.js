@@ -1,4 +1,5 @@
 import { SELECTORS } from './selectors.js';
+import { STATE } from './state.js';
 import { shuffleAndPickRandom } from './utils.js';
 import {
   canFlip,
@@ -19,16 +20,16 @@ export const generateGame = () => {
 
   if (dimensions % 2 !== 0) throw new Error('Размер игрового поля должен быть четным!');
 
-  const EMOJIS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+  const SYMBOLS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
   // Вызываем функцию перемешивания и получения случайной карточки для эмодзи
-  const shuffleAndPickEmoji = shuffleAndPickRandom(EMOJIS);
+  const shuffleAndPickEmoji = shuffleAndPickRandom(SYMBOLS);
 
   // Итерация по карточкам
   const cardsHTML = shuffleAndPickEmoji
     .map((emoji) => {
       return `
-        <div class='card'>
+        <div class='card' id=${STATE.id++}>
             <div class='card-back'></div>
             <div class='card-front'>${emoji}</div>
         </div>`;
@@ -37,13 +38,6 @@ export const generateGame = () => {
 
   // Вставка карточек в игровое поле
   SELECTORS.board.insertAdjacentHTML('beforeend', cardsHTML);
-};
-
-/**
- * Начинает игру
- */
-export const startGame = () => {
-  console.log('startGame');
 };
 
 /**
