@@ -4,7 +4,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url(/src/img/background_main.jpg);
+  background-image: url(/img/background_main.jpg);
 }
 
 .controls {
