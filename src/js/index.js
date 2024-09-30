@@ -1,7 +1,7 @@
 import { generateGame } from './game.js';
 import { handleClick } from './eventHandlers.js';
 import { imageInParts } from './canvas.js';
-import backgroundCard from './src/img/background_card.jpg';
+import backgroundCard from '../img/background_сard.jpg';
 
 document.addEventListener('DOMContentLoaded', () => {
   imageInParts(backgroundCard); // Делим изображение на части
