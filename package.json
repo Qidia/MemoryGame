@@ -27,7 +27,7 @@
     "dev": "vite",
     "predeploy": "npm run build",
     "build": "vite build",
-    "deploy": "gh-pagas -d dist",
+    "deploy": "gh-pages -d dist",
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint --fix src/**/*.js",
     "stylelint": "stylelint src/**/*.css",
