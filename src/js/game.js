@@ -8,7 +8,7 @@ import {
   isSecondCardFlipped,
   checkMatch,
   isGameWon,
-  displayWinMessage,
+  connectingCards,
 } from './utils.js';
 
 /**
@@ -16,7 +16,7 @@ import {
  */
 export const generateGame = () => {
   // Получение data атрибута
-  const dimensions = SELECTORS.board.dataset.dimension;
+  const dimensions = SELECTORS.dimensions;
 
   if (dimensions % 2 !== 0) throw new Error('Размер игрового поля должен быть четным!');
 
@@ -49,5 +49,8 @@ export const handleCardActions = (card) => {
   increaseFlipCount(); // Увеличиваем счетчик ходов
   isSecondCardFlipped() && checkMatch(); // Проверяем совпадение перевернутых карт (возвращаем в исходную позицию).
 
-  isGameWon() && displayWinMessage(); // Если игрок выиграл, отображаем сообщение о прохождении игры.
+  isGameWon() &&
+    setTimeout(() => {
+      connectingCards(); // Если игрок выиграл, сближаем части изображения до составления полного изображения и отображаем сообщение о прохождении игры.
+    }, 1000);
 };

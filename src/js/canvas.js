@@ -1,50 +1,57 @@
 import { STATE } from './state';
+import { SELECTORS } from './selectors';
 
-const image = document.getElementById('image');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d'); /* Возвращаем объект, который предоставляет API для рисования на холсте. */
+/**
+ * Делим изображение на части и записываем в массив
+ */
+export const imageInParts = (imageSrc) => {
+  const canvas = SELECTORS.canvas;
+  const parts = SELECTORS.dimensions; // Количество частей по горизонтали и вертикали
 
-export const imageInParts = () => {
-  const imgWidth = image.width; //определяем ширину изображения
-  const imgHeight = image.height; //определяем высоту изображения
-  const parts = 4; // количество частей по горизонтали и вертикали (ПОМЕНЯТЬ)
+  const ctx = canvas.getContext('2d');
+  const image = new Image(); // Создаём объект изображения
+  image.crossOrigin = 'anonymous'; // Для кросс-доменных изображений, если требуется
+  image.src = imageSrc; // Задаём источник изображения
 
-  // Настраиваем размер холста под изображение
-  canvas.width = imgWidth;
-  canvas.height = imgHeight;
+  // Ждем пока изображение загрузится
+  image.onload = () => {
+    const imgWidth = image.width; //Определяем ширину изображения
+    const imgHeight = image.height; //Определяем высоту изображения
 
-  // Рисуем изображение на холсте
-  ctx.drawImage(image, 0, 0, imgWidth, imgHeight);
+    // Настраиваем размер холста под изображение
+    canvas.width = imgWidth;
+    canvas.height = imgHeight;
 
-  // разбиваем на части
-  const partWidth = imgWidth / parts;
-  const partHeight = imgHeight / parts;
+    // Рисуем изображение на холсте
+    ctx.drawImage(image, 0, 0, imgWidth, imgHeight);
 
-  let imageParts = [];
+    // разбиваем на части
+    const partWidth = imgWidth / parts;
+    const partHeight = imgHeight / parts;
 
-  for (let row = 0; row < parts; row++) {
-    for (let col = 0; col < parts; col++) {
-      //Расчёт координат каждой части
-      const x = col * partWidth; //позиция по горизонтали, вычисляемая как текущий столбец (col) умноженный на ширину одной части (partWidth).
-      const y = row * partHeight; //позиция по вертикали, вычисляемая как текущая строка (row) умноженная на высоту одной части (partHeight).
+    let imageParts = [];
 
-      // Получаем данные части изображения (извлекает данные пикселей части изображения)
-      const imageData = ctx.getImageData(x, y, partWidth, partHeight);
+    // Цикл для создания частей изображения
+    for (let row = 0; row < parts; row++) {
+      for (let col = 0; col < parts; col++) {
+        //Расчёт координат каждой части
+        const x = col * partWidth; //Текущий столбец на ширину одной части
+        const y = row * partHeight; //Текущая строка на высоту одной части
 
-      // Создаем новый canvas для каждой части
-      const partCanvas = document.createElement('canvas');
-      const partCtx = partCanvas.getContext('2d');
-      partCanvas.width = partWidth;
-      partCanvas.height = partHeight;
+        // Получаем данные пикселей части изображения
+        const imageData = ctx.getImageData(x, y, partWidth, partHeight);
 
-      // Копируем данные части на новый canvas (копирует пиксели, которые были извлечены с помощью getImageData, на новый холст.)
-      partCtx.putImageData(imageData, 0, 0);
+        // Создаем новый canvas для каждой части
+        const partCanvas = document.createElement('canvas');
+        const partCtx = partCanvas.getContext('2d');
+        partCanvas.width = partWidth;
+        partCanvas.height = partHeight;
 
-      // Добавляем получившуюся часть в массив (в виде data URL)
-      imageParts.push(partCanvas.toDataURL());
+        partCtx.putImageData(imageData, 0, 0); // Копируем пиксели, на новый canvas
+        imageParts.push(partCanvas.toDataURL()); // Добавляем получившуюся часть в массив (в виде data URL)
+      }
     }
-  }
 
-  STATE.imageParts = [...imageParts];
-  //console.log(STATE.imageParts); // Массив с частями изображения
+    STATE.imageParts = [...imageParts];
+  };
 };

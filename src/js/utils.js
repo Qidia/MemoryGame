@@ -3,8 +3,8 @@ import { SELECTORS } from './selectors.js';
 
 /**
  *
- * @param {strings[]} items - Абстрактные данные для перемешивания и сортировки.
- * @returns {strings[]} - Перемешанный массив с данными.
+ * @param {strings[]} items - Абстрактные данные для перемешивания и сортировки
+ * @returns {strings[]} - Перемешанный массив с данными
  */
 export const shuffleAndPickRandom = (items) => {
   if (!items || !Array.isArray(items)) throw new Error('Передайте значения в виде массива!');
@@ -22,7 +22,7 @@ export const shuffleAndPickRandom = (items) => {
 };
 
 /**
- * Увеличивает счетчик перевернутых карт и общий счетчик ходов.
+ * Увеличивает счетчик перевернутых карт и общий счетчик ходов
  */
 export const increaseFlipCount = () => {
   STATE.flippedCards++;
@@ -30,30 +30,30 @@ export const increaseFlipCount = () => {
 };
 
 /**
- * Сбрасывает счетчик перевернутых карт.
+ * Сбрасывает счетчик перевернутых карт
  */
 const resetFlipCount = () => (STATE.flippedCards = 0);
 
 /**
- * Проверяет, можно перевернуть карту или нет.
- * @returns {boolean} - Да/нет.
+ * Проверяет, можно перевернуть карту или нет
+ * @returns {boolean} - Да/нет
  */
-export const canFlip = () => STATE.flippedCards <= 2;
+export const canFlip = () => STATE.flippedCards < 2;
 
 /**
- * Проверяет, перевернута вторая карта или нет.
- * @returns {boolean} - Да/нет.
+ * Проверяет, перевернута вторая карта или нет
+ * @returns {boolean} - Да/нет
  */
 export const isSecondCardFlipped = () => STATE.flippedCards === 2;
 
 /**
- * Переворачивает карту.
- * @param {HTMLElement} card - Карта для переворачивания.
+ * Переворачивает карту
+ * @param {HTMLElement} card - Карта для переворачивания
  */
 export const flip = (card) => card.classList.add('flipped');
 
 /**
- * Проверяет совпадение перевернутых карт.
+ * Проверяет совпадение перевернутых карт
  */
 export const checkMatch = () => {
   const flippedCards = document.querySelectorAll('.flipped:not(.matched)');
@@ -62,23 +62,23 @@ export const checkMatch = () => {
     markMatched(flippedCards);
   } else {
     setTimeout(() => {
-      flipBack(); // Переворачиваем обратно все карты, которые не совпали.
+      flipBack(); // Переворачиваем обратно все карты, которые не совпали
     }, 1000);
   }
 };
 
 /**
- * Отмечает перевернутые карты как совпавшие.
- * @param {NodeList} cards - Перевернутые карты, которые совпали.
+ * Отмечает перевернутые карты как совпавшие
+ * @param {NodeList} cards - Перевернутые карты, которые совпали
  */
 export const markMatched = (cards) => {
   cards.forEach((card) => card.classList.add('matched'));
-  isSecondCardFlipped() && resetFlipCount(); // Если карточки совпали, обнуляем счетчик.
+  isSecondCardFlipped() && resetFlipCount(); // Если карточки совпали, обнуляем счетчик
   outputPartImage(cards);
 };
 
 /**
- * Переворачивает обратно все карты, которые не совпали, обнуляет счетчик.
+ * Переворачивает обратно все карты, которые не совпали, обнуляет счетчик
  */
 export const flipBack = () => {
   const unmatchedCards = document.querySelectorAll('.card:not(.matched)');
@@ -87,33 +87,31 @@ export const flipBack = () => {
 };
 
 /**
- * Проверяет, выиграл игрок или нет.
- * @returns {boolean} - Да/нет.
+ * Проверяет, выиграл игрок или нет
+ * @returns {boolean} - Да/нет
  */
 export const isGameWon = () => !document.querySelectorAll('.card:not(.flipped)').length;
 
 /**
- * Отображает сообщение о выигрыше.
+ * Отображает сообщение о выигрыше
  */
-export const displayWinMessage = () => {
-  setTimeout(() => {
-    SELECTORS.boardContainer.classList.add('flipped');
-    SELECTORS.win.innerHTML = `
+const displayWinMessage = () => {
+  SELECTORS.boardContainer.classList.add('flipped');
+  SELECTORS.win.innerHTML = `
       <span class="win-text">
         Игра успешно пройдена!<br />
         количество шагов: <span class="highlight">${STATE.totalFlips}</span><br />
       </span>
     `;
 
-    clearInterval(STATE.loop);
-  }, 4000);
+  clearInterval(STATE.loop);
 };
 
 /**
  * Открываем часть картинки на совпавших картах
- * @param {NodeList} cards - Перевернутые карты, которые совпали.
+ * @param {NodeList} cards - Перевернутые карты, которые совпали
  */
-function outputPartImage(cards) {
+const outputPartImage = (cards) => {
   cards.forEach((card) => {
     let id = card.getAttribute('id');
     setTimeout(() => {
@@ -121,6 +119,28 @@ function outputPartImage(cards) {
       <img src = ${STATE.imageParts[id]} class='partImage'></img>`;
 
       card.insertAdjacentHTML('beforeend', imgHTML);
-    }, 2000);
+    }, 1000);
   });
-}
+};
+
+/**
+ * Сближаем части изображения до составления полного изображения
+ */
+export const connectingCards = () => {
+  const computedStyles = getComputedStyle(SELECTORS.board);
+  const partImages = document.querySelectorAll('.partImage');
+  let gap = parseFloat(computedStyles.gridGap); // Извлекаем значение grid-gap из css
+
+  const interval = setInterval(() => {
+    gap -= 0.5;
+    if (gap <= 0) {
+      gap = 0;
+      clearInterval(interval); // Останавливаем анимацию, когда gap достигнет 0
+    }
+    SELECTORS.board.style.gridGap = `${gap}px`;
+
+    partImages.forEach((partImage) => (partImage.style.borderRadius = '0px'));
+  }, 50);
+
+  setTimeout(() => displayWinMessage(), 4000);
+};
